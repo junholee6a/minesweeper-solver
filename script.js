@@ -15,8 +15,8 @@ document.addEventListener('DOMContentLoaded', function() {
     resetGame();
 });
 
-// Resets board, places mines and numbers
-function createBoard() {
+// Resets board, places mines andnumbers. Gaurantees that the cell at (clickR, clickC) is a 0 number cell
+function createBoard(clickR, clickC) {
     // clear board
     board = [];
 
@@ -45,7 +45,9 @@ function createBoard() {
     while (minesMade < numMines) {
         r = randInt(0, size);
         c = randInt(0, size);
-        if (board[r][c] != -1) { // if space is available for a new mine
+        if (board[r][c] != -1
+                && !(r >= clickR - 1 && r <= clickR + 1
+                    && c >= clickC - 1 && c <= clickC + 1)) { // if space is valid for a new mine
             incrementBoardNum(r - 1, c - 1);
             incrementBoardNum(r - 1, c);
             incrementBoardNum(r - 1, c + 1);
@@ -119,7 +121,7 @@ function updateDisplay() {
 function resetGame() {
     numFlags = 0;
     gameEnded = false;
-    createBoard();
+    board = [] // board will be generated on first click
     createFrame();
     createDisplay();
     updateDisplay();
@@ -151,6 +153,9 @@ function checkGameWin() {
 function leftClickCell(r, c) {
     if (gameEnded || frame[r][c] != -1) { // if game is over or cell is not hidden
         return;
+    }
+    if (board.length == 0) { // board not generated yet
+        createBoard(r, c);
     }
     revealCell(r, c);
     updateDisplay();
