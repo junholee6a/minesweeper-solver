@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
     resetGame();
 });
 
-// Resets board, places mines andnumbers. Gaurantees that the cell at (clickR, clickC) is a 0 number cell
+// Resets board, places mines and numbers. Guarantees that the cell at (clickR, clickC) is a 0 number cell
 function createBoard(clickR, clickC) {
     // clear board
     board = [];
