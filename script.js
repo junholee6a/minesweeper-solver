@@ -84,7 +84,7 @@ function createDisplay() {
             });
             cell.addEventListener('contextmenu', (e) => {
                 rightClickCell(r, c);
-                e.preventDefault()
+                e.preventDefault() // prevent right click menu from appearing
             });
             frameContainer.appendChild(cell);
         }
