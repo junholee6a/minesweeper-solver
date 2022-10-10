@@ -228,3 +228,25 @@ function unflagCell(r, c) {
     frame[r][c] = -1;
     numFlags--;
 }
+
+/* 
+ * A simple minesweeper-solving algorithm. Applies a single move, either
+ * revealing or flagging a cell. Only makes a move if it is certain that the
+ * move is correct, and does not consider possible frames more than one move
+ * into the future. If no such move can be found, no move is made. Returns a
+ * copy of the frame with the move made.
+ */
+function simpleAlgorithm(frame) {
+    // frame is all-hidden (no cells revealed yet)
+    if (frame.every(function(row){
+        return row.every(function(value) {
+            return value == -1; // hidden cell
+        });
+    })) {
+        // TODO: Reveal a single cell and return
+    }
+
+    const newFrame = JSON.parse(JSON.stringify(frame)) // deep copy of frame
+
+    // TODO: Implement rest of simpleAlgorithm
+}
