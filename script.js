@@ -6,8 +6,8 @@ var gameEnded = false;
 var size = 9; // length of board
 var numMines = 10;
 numFlags = 0;
-var board = []; // 2D array of integers -1 to 8, with -1 being a mine
-var frame = []; // 2D array of integers, -2=flag, -1=hidden, 0-8=number of mines in proximity
+var global_board = []; // 2D array of integers -1 to 8, with -1 being a mine
+var global_frame = []; // 2D array of integers, -2=flag, -1=hidden, 0-8=number of mines in proximity
 var frameContainer = document.getElementById('frameContainer');
 var flagCount = document.getElementById('flagCount');
 
@@ -15,9 +15,9 @@ document.addEventListener('DOMContentLoaded', function() {
     resetGame();
 });
 
-// Resets board, places mines and numbers. Guarantees that the cell at (clickR, clickC) is a 0 number cell
+// Returns a new board, placing mines and numbers. Guarantees that the cell at (clickR, clickC) is a 0 number cell
 function createBoard(clickR, clickC) {
-    // clear board
+    // initialize board
     board = [];
 
     // fill board with zeros
@@ -60,11 +60,13 @@ function createBoard(clickR, clickC) {
             minesMade++;
         }
     }
+
+    return board
 }
 
-// Resets frame
+// Returns a new frame, all hidden
 function createFrame() {
-    // clear frame
+    // initialize frame
     frame = [];
 
     // fill board with 'h' (hidden)
@@ -72,6 +74,7 @@ function createFrame() {
         let row = new Array(size).fill(-1);
         frame.push(row);
     }
+    return frame
 }
 
 // Clears and initializes the visible dispay
@@ -93,22 +96,22 @@ function createDisplay() {
     }
 }
 
-// Updates the visible frame to match the 'frame' array
-// Should be called whenever the 'frame' array is modified
+// Updates the visible frame to match the 'global_frame' array
+// Should be called whenever the 'global_frame' array is modified
 function updateDisplay() {
     let cells = frameContainer.children;
     for (let r = 0; r < size; r++) {
         for (let c = 0; c < size; c++) {
             let i = r * size + c;
             let cell = cells[i];
-            if (frame[r][c] == -2) { // flag
+            if (global_frame[r][c] == -2) { // flag
                 cell.style.backgroundColor = 'Red';
-            } else if (frame[r][c] == -1) { // hidden
+            } else if (global_frame[r][c] == -1) { // hidden
                 cell.style.backgroundColor = 'Green';
             } else { // number 0-8
                 cell.style.backgroundColor = 'LightGrey';
-                if (frame[r][c] > 0)
-                    cell.innerHTML = String(frame[r][c]);
+                if (global_frame[r][c] > 0)
+                    cell.innerHTML = String(global_frame[r][c]);
             }
         }
     }
@@ -121,8 +124,8 @@ function updateDisplay() {
 function resetGame() {
     numFlags = 0;
     gameEnded = false;
-    board = [] // board will be generated on first click
-    createFrame();
+    global_board = [] // board will be generated on first click
+    global_frame = createFrame();
     createDisplay();
     updateDisplay();
 }
@@ -141,7 +144,7 @@ function winGame() {
 function checkGameWin() {
     for (let r = 0; r < size; r++) {
         for (let c = 0; c < size; c++) {
-            if (board[r][c] >= 0 && frame[r][c] != board[r][c]) { // if number cell that is not revealed
+            if (global_board[r][c] >= 0 && global_frame[r][c] != global_board[r][c]) { // if number cell that is not revealed
                 return;
             }
         }
@@ -151,38 +154,38 @@ function checkGameWin() {
 
 // Called when a cell is left-clicked
 function leftClickCell(r, c) {
-    if (gameEnded || frame[r][c] != -1) { // if game is over or cell is not hidden
+    if (gameEnded || global_frame[r][c] != -1) { // if game is over or cell is not hidden
         return;
     }
-    if (board.length == 0) { // board not generated yet
-        createBoard(r, c);
+    if (global_board.length == 0) { // board not generated yet
+        global_board = createBoard(r, c);
     }
-    revealCell(r, c);
+    global_frame = revealCell(global_frame, r, c);
     updateDisplay();
     checkGameWin();
 }
 
-// Updates frame such that a cell is revealed by the player
-function revealCell(r, c) {
-    if (board[r][c] == -1) { // cell is a mine
+// Returns an updated frame such that a cell is revealed by the player
+function revealCell(frame, r, c) {
+    if (global_board[r][c] == -1) { // cell is a mine
         loseGame();
-        return;
+        return frame;
     }
 
     // update cell
-    frame[r][c] = board[r][c];
+    frame[r][c] = global_board[r][c];
 
     function revealCellRecursive(r, c) {
         if (r < 0 || c < 0 || r >= size || c >= size
-            || board[r][c] == -1 || frame[r][c] != -1) { // if not a valid, hidden number cell
+            || global_board[r][c] == -1 || frame[r][c] != -1) { // if not a valid, hidden number cell
             return;
         }
     
         // update cell
-        frame[r][c] = board[r][c];
+        frame[r][c] = global_board[r][c];
     
         // recursive, if current cell is zero
-        if (board[r][c] == 0) {
+        if (global_board[r][c] == 0) {
             revealCellRecursive(r - 1, c - 1);
             revealCellRecursive(r - 1, c);
             revealCellRecursive(r - 1, c + 1);
@@ -196,7 +199,7 @@ function revealCell(r, c) {
     }
 
     // recursive, if current cell is zero
-    if (board[r][c] == 0) {
+    if (global_board[r][c] == 0) {
         revealCellRecursive(r - 1, c - 1);
         revealCellRecursive(r - 1, c);
         revealCellRecursive(r - 1, c + 1);
@@ -207,26 +210,32 @@ function revealCell(r, c) {
         revealCellRecursive(r + 1, c);
         revealCellRecursive(r + 1, c + 1);
     }
+
+    return frame
 }
 
 // Called when a cell is right-clicked
 function rightClickCell(r, c) {
-    if (frame[r][c] == -1) { // if hidden cell
-        flagCell(r, c);
-    } else if (frame[r][c] == -2) { // if flagged cell
-        unflagCell(r, c);
+    if (global_frame[r][c] == -1) { // if hidden cell
+        global_frame = flagCell(global_frame, r, c);
+    } else if (global_frame[r][c] == -2) { // if flagged cell
+        global_frame = unflagCell(global_frame, r, c);
     }
     updateDisplay();
 }
 
-function flagCell(r, c) {
+// Returns an updated frame such that a cell is flagged
+function flagCell(frame, r, c) {
     frame[r][c] = -2;
     numFlags++;
+    return frame
 }
 
-function unflagCell(r, c) {
+//Returns an updated frame such that a cell is unflagged
+function unflagCell(frame, r, c) {
     frame[r][c] = -1;
     numFlags--;
+    return frame
 }
 
 /* 
