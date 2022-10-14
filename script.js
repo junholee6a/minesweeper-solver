@@ -235,7 +235,45 @@ function flagCell(frame, r, c) {
 function unflagCell(frame, r, c) {
     frame[r][c] = -1;
     numFlags--;
-    return frame
+    return frame;
+}
+
+/* 
+ * Takes frame and the position of a revealed number cell as parameters.
+ * Returns a list of (r, c) pairs, for the positions of cells surrounding
+ * the given number cell that the number cell constrains to be mines. This occurs
+ * when the number of hidden cells around a number cell is equal to the number
+ * of unrevealed mines around it. Otherwise, the returned list is empty.
+ */
+function certainFlags(frame, numR, numC) {
+    const numFlags = frame[numR][numC];
+    const surroundingPositions = [[numR - 1, numC - 1],
+                                    [numR - 1, numC]
+                                    [numR - 1, numC + 1]
+                                    [numR, numC - 1]
+                                    [numR, numC + 1]
+                                    [numR + 1, numC - 1]
+                                    [numR + 1, numC]
+                                    [numR + 1, numC + 1]];
+    let numFlagsFound = 0;
+    let numCellsHidden = 0;
+    const flagPositions = [];
+    for (let [r, c] of surroundingPositions) {
+        if (r >= 0 && r < size && c >= 0 && c < size) {
+            if (frame[r][c] == -1) { // hidden
+                numCellsHidden++;
+                flagPositions.push([r, c]);
+            } else if (frame[r][c] == -2) { // flag
+                numFlagsFound++;
+            }
+        }
+    }
+
+    if (numCellsHidden + numFlagsFound == numFlags)
+        return flagPositions;
+    else
+        return [];
+
 }
 
 /* 
@@ -252,10 +290,30 @@ function simpleAlgorithm(frame) {
             return value == -1; // hidden cell
         });
     })) {
-        // TODO: Reveal a single cell and return
+        // Reveal middle cell and return
+        mid = int(size / 2)
+        global_frame = revealCell(global_frame, mid, mid)
+        return;
+
     }
 
     const newFrame = JSON.parse(JSON.stringify(frame)) // deep copy of frame
 
     // TODO: Implement rest of simpleAlgorithm
+
+    // For each revealed number cell on the frame:
+    //     If the cell guarantees a mine placement in a nearby cell:
+    //         Flag the suspected mine
+    //         return
+    //     Else if the cell’s nearby mines have all been revealed, but not all of its nearby number cells have been revealed:
+    //         Reveal a nearby number cells
+    //         return
+
+    for (let r = 0; r < size;  r++) {
+        for (let c = 0; c < size; c++) {
+
+        }
+    }
+        
+
 }
