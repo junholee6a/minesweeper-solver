@@ -2,14 +2,14 @@
 // frame represents the grid that the user sees and interacts with (revealed numbers, hidden spaces, flags)
 
 // Global variables
-var gameEnded = false;
-var size = 9; // length of board
-var numMines = 10;
-numFlags = 0;
-var global_board = []; // 2D array of integers -1 to 8, with -1 being a mine
-var global_frame = []; // 2D array of integers, -2=flag, -1=hidden, 0-8=number of mines in proximity
-var frameContainer = document.getElementById('frameContainer');
-var flagCount = document.getElementById('flagCount');
+let gameEnded = false;
+let size = 9; // length of board
+let numMines = 10;
+let numFlags = 0;
+let global_board = []; // 2D array of integers -1 to 8, with -1 being a mine
+let global_frame = []; // 2D array of integers, -2=flag, -1=hidden, 0-8=number of mines in proximity
+let frameContainer = document.getElementById('frameContainer');
+let flagCount = document.getElementById('flagCount');
 
 document.addEventListener('DOMContentLoaded', function() {
     resetGame();
