@@ -1,0 +1,20 @@
+{
+  "name": "minesweeper-solver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/junholee6a/minesweeper-solver.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/junholee6a/minesweeper-solver/issues"
+  },
+  "homepage": "https://github.com/junholee6a/minesweeper-solver#readme",
+  "type": "module"
+}

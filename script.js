@@ -245,7 +245,7 @@ function unflagCell(frame, r, c) {
  * when the number of hidden cells around a number cell is equal to the number
  * of unrevealed mines around it. Otherwise, the returned list is empty.
  */
-function certainFlags(frame, numR, numC) {
+export function certainFlags(frame, numR, numC) {
     const numFlags = frame[numR][numC];
     const surroundingPositions = [[numR - 1, numC - 1],
                                     [numR - 1, numC]
