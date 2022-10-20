@@ -8,6 +8,8 @@
  */
 function certainFlags(frame, numR, numC, size) {
     const numFlags = frame[numR][numC];
+    if (numFlags < 0)
+        return [];
     const surroundingPositions = [[numR - 1, numC - 1],
                                     [numR - 1, numC],
                                     [numR - 1, numC + 1],
@@ -56,15 +58,45 @@ function testCertainFlags() {
             numR: 1,
             numC: 1,
             key: [[0, 1], [1, 0]]
+        },
+        {
+            frame: [
+                [3, -1, -1],
+                [-1, -2, -1],
+                [-1, -1, -1]
+            ],
+            numR: 0,
+            numC: 0,
+            key: [[0, 1], [1, 0]]
+        },
+        {
+            frame: [
+                [-1, -2, -1],
+                [5, -1, -1],
+                [-1, -1, -1]
+            ],
+            numR: 1,
+            numC: 0,
+            key: [[0, 0], [1, 1], [2, 0], [2, 1]]
+        },
+        {
+            frame: [
+                [-1, -1, -1],
+                [-1, 8, -1],
+                [-1, -1, -1]
+            ],
+            numR: 1,
+            numC: 1,
+            key: [[0, 0], [0, 1], [0, 2], [1, 0], [1, 2], [2, 0], [2, 1], [2, 2]]
         }
     ];
 
     for (test of tests) {
         let positions = certainFlags(test.frame, test.numR, test.numC, test.frame.length)
         if (JSON.stringify(positions.sort()) == JSON.stringify(test.key.sort()))
-            console.log("Passed");
+            console.log('Passed ' + JSON.stringify(test));
         else
-            console.log("Failed");
+            console.log('Failed ' + JSON.stringify(test));
     }
 }
 

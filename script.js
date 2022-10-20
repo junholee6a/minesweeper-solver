@@ -247,13 +247,15 @@ function unflagCell(frame, r, c) {
  */
 function certainFlags(frame, numR, numC) {
     const numFlags = frame[numR][numC];
+    if (numFlags < 0)
+        return [];
     const surroundingPositions = [[numR - 1, numC - 1],
-                                    [numR - 1, numC]
-                                    [numR - 1, numC + 1]
-                                    [numR, numC - 1]
-                                    [numR, numC + 1]
-                                    [numR + 1, numC - 1]
-                                    [numR + 1, numC]
+                                    [numR - 1, numC],
+                                    [numR - 1, numC + 1],
+                                    [numR, numC - 1],
+                                    [numR, numC + 1],
+                                    [numR + 1, numC - 1],
+                                    [numR + 1, numC],
                                     [numR + 1, numC + 1]];
     let numFlagsFound = 0;
     let numCellsHidden = 0;
