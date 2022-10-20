@@ -7,8 +7,8 @@
  * of unrevealed mines around it. Otherwise, the returned list is empty.
  */
 function certainFlags(frame, numR, numC, size) {
-    const numFlags = frame[numR][numC];
-    if (numFlags < 0)
+    const numMines = frame[numR][numC];
+    if (numMines < 0)
         return [];
     const surroundingPositions = [[numR - 1, numC - 1],
                                     [numR - 1, numC],
@@ -32,7 +32,7 @@ function certainFlags(frame, numR, numC, size) {
         }
     }
 
-    if (numCellsHidden + numFlagsFound == numFlags)
+    if (numCellsHidden + numFlagsFound == numMines)
         return flagPositions;
     else
         return [];

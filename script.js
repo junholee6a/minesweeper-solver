@@ -245,9 +245,9 @@ function unflagCell(frame, r, c) {
  * when the number of hidden cells around a number cell is equal to the number
  * of unrevealed mines around it. Otherwise, the returned list is empty.
  */
-function certainFlags(frame, numR, numC) {
-    const numFlags = frame[numR][numC];
-    if (numFlags < 0)
+function certainFlags(frame, numR, numC, size) {
+    const numMines = frame[numR][numC];
+    if (numMines < 0)
         return [];
     const surroundingPositions = [[numR - 1, numC - 1],
                                     [numR - 1, numC],
@@ -271,7 +271,7 @@ function certainFlags(frame, numR, numC) {
         }
     }
 
-    if (numCellsHidden + numFlagsFound == numFlags)
+    if (numCellsHidden + numFlagsFound == numMines)
         return flagPositions;
     else
         return [];
@@ -286,7 +286,6 @@ function certainFlags(frame, numR, numC) {
  * flagged.
  */
 function certainNumCells(frame, numR, numC) {
-    size = frame.length // can remove this line for production
     const numMines = frame[numR][numC];
     if (numMines < 0) // (numR, numC) is not a number cell
         return [];
