@@ -278,6 +278,43 @@ function certainFlags(frame, numR, numC) {
 
 }
 
+/*
+ * Takes frame and the position of a revealed number cell as parameters.
+ * Returns a list of (r, c) pairs, for the positions of cells surrounding
+ * the given number cell that the number cell constrains to be number cells.
+ * This occurs when all of the mines around that number cell have been
+ * flagged.
+ */
+function certainNumCells(frame, numR, numC) {
+    size = frame.length // can remove this line for production
+    const numMines = frame[numR][numC];
+    if (numMines < 0) // (numR, numC) is not a number cell
+        return [];
+    const surroundingPositions = [[numR - 1, numC - 1],
+        [numR - 1, numC],
+        [numR - 1, numC + 1],
+        [numR, numC - 1],
+        [numR, numC + 1],
+        [numR + 1, numC - 1],
+        [numR + 1, numC],
+        [numR + 1, numC + 1]
+    ];
+    const hiddenCells = [];
+    let numFlags = 0;
+    for (let [r, c] of surroundingPositions) {
+        if (r >= 0 && r < size && c >= 0 && c < size) {
+            if (frame[r][c] == -1) // hidden
+                hiddenCells.push([r, c]);
+            else if (frame[r][c] == -2) // flag
+                numFlags++;
+        }
+    }
+    if (numFlags == numMines)
+        return hiddenCells;
+    else
+        return [];
+}
+
 /* 
  * A simple minesweeper-solving algorithm. Applies a single move, either
  * revealing or flagging a cell. Only makes a move if it is certain that the
