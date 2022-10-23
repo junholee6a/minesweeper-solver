@@ -322,23 +322,23 @@ function certainNumCells(frame, numR, numC) {
  * copy of the frame with the move made.
  */
 function simpleAlgorithm(frame) {
-    // frame is all-hidden (no cells revealed yet)
+    const size = frame.length // can remove this line for production
+    // if frame is all-hidden (no cells revealed yet)
     if (frame.every(function(row){
         return row.every(function(value) {
-            return value == -1; // hidden cell
+            return value == -1; // whether hidden cell
         });
     })) {
         // Reveal middle cell and return
-        mid = int(size / 2)
-        global_frame = revealCell(global_frame, mid, mid)
-        return;
+        mid = Math.trunc(size / 2);
+        return revealCell(frame, mid, mid);
 
     }
 
-    const newFrame = JSON.parse(JSON.stringify(frame)) // deep copy of frame
+    let newFrame = JSON.parse(JSON.stringify(frame)); // deep copy of frame
 
-    // TODO: Implement rest of simpleAlgorithm
-
+    // Simplified description of simpleAlgorithm:
+    //
     // For each revealed number cell on the frame:
     //     If the cell guarantees a mine placement in a nearby cell:
     //         Flag the suspected mine
@@ -347,11 +347,24 @@ function simpleAlgorithm(frame) {
     //         Reveal a nearby number cells
     //         return
 
-    for (let r = 0; r < size;  r++) {
+    for (let r = 0; r < size; r++) {
         for (let c = 0; c < size; c++) {
-
+            if (frame[r][c] > 0) { // if number cell
+                const certainFlagsList = certainFlags(frame, r, c);
+                const certainNumCellsList = certainNumCells(frame, r, c);
+                if (certainFlagsList.length > 0) {
+                    const [certR, certC] = certainFlagsList[0];
+                    newFrame[certR][certC] = -2; // set a flag
+                    return newFrame;
+                } else if (certainNumCellsList.length > 0) {
+                    const [certR, certC] = certainNumCellsList[0];
+                    newFrame = revealCell(frame, certR, certC); // reveal a cell
+                    return newFrame;
+                }
+            }
         }
     }
-        
-
+    
+    // no move was found
+    return newFrame;
 }
