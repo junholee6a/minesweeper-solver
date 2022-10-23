@@ -6,10 +6,15 @@ let gameEnded = false;
 let size = 9; // length of board
 let numMines = 10;
 let numFlags = 0;
-let global_board = []; // 2D array of integers -1 to 8, with -1 being a mine
-let global_frame = []; // 2D array of integers, -2=flag, -1=hidden, 0-8=number of mines in proximity
+let globalBoard = []; // 2D array of integers -1 to 8, with -1 being a mine
+let globalFrame = []; // 2D array of integers, -2=flag, -1=hidden, 0-8=number of mines in proximity
 let frameContainer = document.getElementById('frameContainer');
 let flagCount = document.getElementById('flagCount');
+const moves = { // enum of move types that can be made on a frame
+    REVEAL: "reveal",
+    FLAG: "flag"
+}
+Object.freeze(moves);
 
 document.addEventListener('DOMContentLoaded', function() {
     resetGame();
@@ -104,14 +109,14 @@ function updateDisplay() {
         for (let c = 0; c < size; c++) {
             let i = r * size + c;
             let cell = cells[i];
-            if (global_frame[r][c] == -2) { // flag
+            if (globalFrame[r][c] == -2) { // flag
                 cell.style.backgroundColor = 'Red';
-            } else if (global_frame[r][c] == -1) { // hidden
+            } else if (globalFrame[r][c] == -1) { // hidden
                 cell.style.backgroundColor = 'Green';
             } else { // number 0-8
                 cell.style.backgroundColor = 'LightGrey';
-                if (global_frame[r][c] > 0)
-                    cell.innerHTML = String(global_frame[r][c]);
+                if (globalFrame[r][c] > 0)
+                    cell.innerHTML = String(globalFrame[r][c]);
             }
         }
     }
@@ -124,8 +129,8 @@ function updateDisplay() {
 function resetGame() {
     numFlags = 0;
     gameEnded = false;
-    global_board = [] // board will be generated on first click
-    global_frame = createFrame();
+    globalBoard = [] // board will be generated on first click
+    globalFrame = createFrame();
     createDisplay();
     updateDisplay();
 }
@@ -144,7 +149,7 @@ function winGame() {
 function checkGameWin() {
     for (let r = 0; r < size; r++) {
         for (let c = 0; c < size; c++) {
-            if (global_board[r][c] >= 0 && global_frame[r][c] != global_board[r][c]) { // if number cell that is not revealed
+            if (globalBoard[r][c] >= 0 && globalFrame[r][c] != globalBoard[r][c]) { // if number cell that is not revealed
                 return;
             }
         }
@@ -152,40 +157,40 @@ function checkGameWin() {
     winGame();
 }
 
-// Called when a cell is left-clicked
+// Called when a cell is left-clicked (reveals a cell)
 function leftClickCell(r, c) {
-    if (gameEnded || global_frame[r][c] != -1) { // if game is over or cell is not hidden
+    if (gameEnded || globalFrame[r][c] != -1) { // if game is over or cell is not hidden
         return;
     }
-    if (global_board.length == 0) { // board not generated yet
-        global_board = createBoard(r, c);
+    if (globalBoard.length == 0) { // board not generated yet
+        globalBoard = createBoard(r, c);
     }
-    global_frame = revealCell(global_frame, r, c);
+    globalFrame = revealCell(globalFrame, r, c);
     updateDisplay();
     checkGameWin();
 }
 
 // Returns an updated frame such that a cell is revealed by the player
 function revealCell(frame, r, c) {
-    if (global_board[r][c] == -1) { // cell is a mine
+    if (globalBoard[r][c] == -1) { // cell is a mine
         loseGame();
         return frame;
     }
 
     // update cell
-    frame[r][c] = global_board[r][c];
+    frame[r][c] = globalBoard[r][c];
 
     function revealCellRecursive(r, c) {
         if (r < 0 || c < 0 || r >= size || c >= size
-            || global_board[r][c] == -1 || frame[r][c] != -1) { // if not a valid, hidden number cell
+            || globalBoard[r][c] == -1 || frame[r][c] != -1) { // if not a valid, hidden number cell
             return;
         }
     
         // update cell
-        frame[r][c] = global_board[r][c];
+        frame[r][c] = globalBoard[r][c];
     
         // recursive, if current cell is zero
-        if (global_board[r][c] == 0) {
+        if (globalBoard[r][c] == 0) {
             revealCellRecursive(r - 1, c - 1);
             revealCellRecursive(r - 1, c);
             revealCellRecursive(r - 1, c + 1);
@@ -199,7 +204,7 @@ function revealCell(frame, r, c) {
     }
 
     // recursive, if current cell is zero
-    if (global_board[r][c] == 0) {
+    if (globalBoard[r][c] == 0) {
         revealCellRecursive(r - 1, c - 1);
         revealCellRecursive(r - 1, c);
         revealCellRecursive(r - 1, c + 1);
@@ -214,12 +219,12 @@ function revealCell(frame, r, c) {
     return frame
 }
 
-// Called when a cell is right-clicked
+// Called when a cell is right-clicked (flags/unflags a cell)
 function rightClickCell(r, c) {
-    if (global_frame[r][c] == -1) { // if hidden cell
-        global_frame = flagCell(global_frame, r, c);
-    } else if (global_frame[r][c] == -2) { // if flagged cell
-        global_frame = unflagCell(global_frame, r, c);
+    if (globalFrame[r][c] == -1) { // if hidden cell
+        globalFrame = flagCell(globalFrame, r, c);
+    } else if (globalFrame[r][c] == -2) { // if flagged cell
+        globalFrame = unflagCell(globalFrame, r, c);
     }
     updateDisplay();
 }
@@ -245,7 +250,7 @@ function unflagCell(frame, r, c) {
  * when the number of hidden cells around a number cell is equal to the number
  * of unrevealed mines around it. Otherwise, the returned list is empty.
  */
-function certainFlags(frame, numR, numC, size) {
+function certainFlags(frame, numR, numC) {
     const numMines = frame[numR][numC];
     if (numMines < 0)
         return [];
@@ -318,11 +323,11 @@ function certainNumCells(frame, numR, numC) {
  * A simple minesweeper-solving algorithm. Applies a single move, either
  * revealing or flagging a cell. Only makes a move if it is certain that the
  * move is correct, and does not consider possible frames more than one move
- * into the future. If no such move can be found, no move is made. Returns a
- * copy of the frame with the move made.
+ * into the future. If no such move can be found, returns null. Returns an
+ * object with format (moveType, r, c}, where moveType = moves.REVEAL or
+ * moves.FLAG.
  */
 function simpleAlgorithm(frame) {
-    const size = frame.length // can remove this line for production
     // if frame is all-hidden (no cells revealed yet)
     if (frame.every(function(row){
         return row.every(function(value) {
@@ -331,11 +336,13 @@ function simpleAlgorithm(frame) {
     })) {
         // Reveal middle cell and return
         mid = Math.trunc(size / 2);
-        return revealCell(frame, mid, mid);
-
+        const move = {
+            moveType: moves.REVEAL,
+            r: mid,
+            c: mid
+        }
+        return move;
     }
-
-    let newFrame = JSON.parse(JSON.stringify(frame)); // deep copy of frame
 
     // Simplified description of simpleAlgorithm:
     //
@@ -354,17 +361,38 @@ function simpleAlgorithm(frame) {
                 const certainNumCellsList = certainNumCells(frame, r, c);
                 if (certainFlagsList.length > 0) {
                     const [certR, certC] = certainFlagsList[0];
-                    newFrame[certR][certC] = -2; // set a flag
-                    return newFrame;
+                    const move = {
+                        moveType: moves.FLAG,
+                        r: certR,
+                        c: certC
+                    }
+                    return move;
                 } else if (certainNumCellsList.length > 0) {
                     const [certR, certC] = certainNumCellsList[0];
-                    newFrame = revealCell(frame, certR, certC); // reveal a cell
-                    return newFrame;
+                    const move = {
+                        moveType: moves.REVEAL,
+                        r: certR,
+                        c: certC
+                    }
+                    return move;
                 }
             }
         }
     }
     
     // no move was found
-    return newFrame;
+    return null;
+}
+
+// Called when the applyAlgo button is clicked
+function applySimpleAlgo() {
+    const move = simpleAlgorithm(globalFrame);
+    if (move === null) {
+        return;
+    } else if (move.moveType == moves.REVEAL) {
+        leftClickCell(move.r, move.c);
+    } else if (move.moveType == moves.FLAG) {
+        rightClickCell(move.r, move.c);
+    }
+    updateDisplay();
 }

@@ -17,6 +17,11 @@
     font-family: sans-serif;
 }
 
+#applyAlgoButton {
+    margin: 0 auto;
+    display: block;
+}
+
 #resetButton {
     margin: 0 auto;
     display: block;
