@@ -1,11 +1,11 @@
 import useGame from "./useGame.js";
 
 export default function App() {
-    const [getFrame, resetGame, reveal, flag, applySimpleAlgo] = useGame();
+    const [frame, gameWon, gameLost, numFlags, resetGame, reveal, flag, applySimpleAlgo] = useGame();
 
     return (
         <>
-            <div id="frameContainer"></div>
+            <GameDisplay id="frameContainer" frame={getFrame()}/>
             <div id="controlPanel">
                 <span id="flagCount">Flags left: </span>
                 <input
@@ -28,6 +28,7 @@ export default function App() {
 
 function GameDisplay(props) {
     const frame = props.frame;
+    
     const size = frame.length;
     const cells = [];
     for (let r = 0; r < size; r++) {
@@ -36,8 +37,7 @@ function GameDisplay(props) {
             let cell = cells[i];
             if (frame[r][c] == -2) {
                 // flag
-                cells.push(<></>); // need to handle clicks too. Consider making a cell component
-                cell.style.backgroundColor = "Red";
+                cells.push(<div backgroundColor="Red"></div>);
             } else if (frame[r][c] == -1) {
                 // hidden
                 cell.style.backgroundColor = "Green";

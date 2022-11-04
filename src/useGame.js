@@ -14,8 +14,11 @@ import {
 export default function useGame() {
     const size = 9;
     const numMines = 10;
-    const [gameEnded, setGameEnded] = useState(false);
+    const [gameWon, setGameWon] = useState(false);
+    const [gameLost, setGameLost] = useState(false);
     const [numFlags, setNumFlags] = useState(10);
+
+    // TODO: Get rid of all return values in these functions
 
     // Represents the true cell values, which may not be visible to the user.
     // 2D array of integers -1 to 8, with -1 being a mine
@@ -25,15 +28,11 @@ export default function useGame() {
     // 2D array of integers, -2=flag, -1=hidden, 0-8=number of mines in proximity
     const [globalFrame, setGlobalFrame] = useState(createFrame(size));
 
-    // Returns the global frame
-    function getFrame() {
-        return globalFrame;
-    }
-
     // Call to reset the game.
     // Returns the (all-hidden) frame of the generated game.
     function resetGame() {
-        setGameEnded(false);
+        setGameWon(false);
+        setGameLost(false);
         setNumFlags(10);
         setGlobalBoard([]); // will be generated on first click
         const frame = createFrame(size);
@@ -48,6 +47,10 @@ export default function useGame() {
      *     frame: New frame array
      */
     function reveal(r, c) {
+        // if there is no active game, do nothing
+        if (gameWon || gameLost)
+            return;
+
         let board = [];
         if (globalBoard.length == 0) {
             // generate a global board
@@ -55,9 +58,14 @@ export default function useGame() {
         } else {
             board = globalBoard;
         }
-        const { gameLost, frame } = revealCell(globalFrame, board, r, c);
-        if (gameLost) setGameEnded(true);
-        return { gameLost, frame };
+        const result = revealCell(globalFrame, board, r, c);
+        const frame = result.frame;
+        setGameLost(result.gameLost);
+        setGameWon(isGameWon(globalBoard, frame));
+        return {
+            gameLost: result.gameLost,
+            frame: frame,
+        };
     }
 
     /*
@@ -67,6 +75,10 @@ export default function useGame() {
      *      numFlags: Number of flags remaining
      */
     function flag(r, c) {
+        // if there is no active game, do nothing
+        if (gameWon || gameLost)
+            return;
+
         if (globalFrame[r][c] == -1) {
             // if hidden cell, flag
             const newNumFlags = numFlags - 1;
@@ -127,5 +139,5 @@ export default function useGame() {
         }
     }
 
-    return [getFrame, resetGame, reveal, flag, applySimpleAlgo];
+    return [globalFrame, gameWon, gameLost, numFlags, resetGame, reveal, flag, applySimpleAlgo];
 }
