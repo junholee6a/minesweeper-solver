@@ -5,7 +5,7 @@ export default function App() {
 
     return (
         <>
-            <GameDisplay id="frameContainer" frame={getFrame()}/>
+            <GameDisplay id="frameContainer" frame={frame} reveal={reveal} flag={flag} />
             <div id="controlPanel">
                 <span id="flagCount">Flags left: </span>
                 <input
@@ -28,6 +28,8 @@ export default function App() {
 
 function GameDisplay(props) {
     const frame = props.frame;
+    const reveal = props.reveal;
+    const flag = props.flag;
     
     const size = frame.length;
     const cells = [];
@@ -35,22 +37,32 @@ function GameDisplay(props) {
         for (let c = 0; c < size; c++) {
             let i = r * size + c;
             let cell = cells[i];
+
+            function handleLeftClick(e) {
+                reveal(r, c);
+            }
+
+            function handleRightClick(e) {
+                flag(r, c);
+                e.preventDefault()
+            }
+
             if (frame[r][c] == -2) {
                 // flag
-                cells.push(<div backgroundColor="Red"></div>);
+                cells.push(<div backgroundColor="Red" onClick={handleLeftClick} onContextMenu={handleRightClick}></div>);
             } else if (frame[r][c] == -1) {
                 // hidden
-                cell.style.backgroundColor = "Green";
+                cells.push(<div backgroundColor="Green" onClick={handleLeftClick} onContextMenu={handleRightClick}></div>);
             } else {
                 // number 0-8
-                cell.style.backgroundColor = "LightGrey";
+                const text = "";
                 if (frame[r][c] > 0)
-                    cell.innerHTML = String(globalFrame[r][c]);
+                    text = String(frame[r][c]);
+                cells.push(<div backgroundColor="LightGrey" onClick={handleLeftClick} onContextMenu={handleRightClick}>{text}</div>);
+                
             }
         }
     }
-    return (
-
-    );
+    return (<>{cells}</>);
 
 }
