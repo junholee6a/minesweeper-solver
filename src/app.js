@@ -3,6 +3,12 @@ import useGame from "./useGame.js";
 export default function App() {
     const [frame, gameWon, gameLost, numFlags, resetGame, reveal, flag, applySimpleAlgo] = useGame();
 
+    const gameStatus = ""
+    if (gameWon)
+        gameStatus = "You win!";
+    else is (gameLost)
+        gameStatus = "You lost!";
+
     return (
         <>
             <GameDisplay id="frameContainer" frame={frame} reveal={reveal} flag={flag} />
@@ -20,6 +26,7 @@ export default function App() {
                     value="Reset"
                     onClick="resetGame()"
                 />
+                <p>{gameStatus}</p>
             </div>
             <script src="script.js"></script>
         </>
