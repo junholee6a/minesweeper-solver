@@ -30,7 +30,7 @@ export function createBoard(clickR, clickC, size, numMines) {
         r = randInt(0, size);
         c = randInt(0, size);
         if (
-            board[r][c] != -1 &&
+            board[r][c] !== -1 &&
             !(
                 r >= clickR - 1 &&
                 r <= clickR + 1 &&
@@ -74,7 +74,7 @@ export function isGameWon(board, frame) {
     const size = frame.length;
     for (let r = 0; r < size; r++) {
         for (let c = 0; c < size; c++) {
-            if (board[r][c] >= 0 && frame[r][c] != board[r][c]) {
+            if (board[r][c] >= 0 && frame[r][c] !== board[r][c]) {
                 // if number cell that is not revealed
                 return false;
             }
@@ -89,7 +89,7 @@ export function isGameWon(board, frame) {
 //      frame: An updated frame such that a cell is revealed by the player
 export function revealCell(frame, board, r, c) {
     const size = frame.length;
-    if (board[r][c] == -1) {
+    if (board[r][c] === -1) {
         // cell is a mine
         return {
             gameLost: true,
@@ -106,8 +106,8 @@ export function revealCell(frame, board, r, c) {
             c < 0 ||
             r >= size ||
             c >= size ||
-            board[r][c] == -1 ||
-            frame[r][c] != -1
+            board[r][c] === -1 ||
+            frame[r][c] !== -1
         ) {
             // if not a valid, hidden number cell
             return {
@@ -120,7 +120,7 @@ export function revealCell(frame, board, r, c) {
         frame[r][c] = board[r][c];
 
         // recursive, if current cell is zero
-        if (board[r][c] == 0) {
+        if (board[r][c] === 0) {
             revealCellRecursive(r - 1, c - 1);
             revealCellRecursive(r - 1, c);
             revealCellRecursive(r - 1, c + 1);
@@ -134,7 +134,7 @@ export function revealCell(frame, board, r, c) {
     }
 
     // recursive, if current cell is zero
-    if (board[r][c] == 0) {
+    if (board[r][c] === 0) {
         revealCellRecursive(r - 1, c - 1);
         revealCellRecursive(r - 1, c);
         revealCellRecursive(r - 1, c + 1);
@@ -154,7 +154,6 @@ export function revealCell(frame, board, r, c) {
 
 // Returns an updated frame such that a cell is flagged
 export function flagCell(frame, r, c) {
-    const size = frame.length;
     frame[r][c] = -2;
     return frame;
 }
@@ -191,18 +190,18 @@ function certainFlags(frame, numR, numC) {
     const flagPositions = [];
     for (let [r, c] of surroundingPositions) {
         if (r >= 0 && r < size && c >= 0 && c < size) {
-            if (frame[r][c] == -1) {
+            if (frame[r][c] === -1) {
                 // hidden
                 numCellsHidden++;
                 flagPositions.push([r, c]);
-            } else if (frame[r][c] == -2) {
+            } else if (frame[r][c] === -2) {
                 // flag
                 numFlagsFound++;
             }
         }
     }
 
-    if (numCellsHidden + numFlagsFound == numCloseMines) return flagPositions;
+    if (numCellsHidden + numFlagsFound === numCloseMines) return flagPositions;
     else return [];
 }
 
@@ -233,15 +232,15 @@ function certainNumCells(frame, numR, numC) {
     let numFlags = 0;
     for (let [r, c] of surroundingPositions) {
         if (r >= 0 && r < size && c >= 0 && c < size) {
-            if (frame[r][c] == -1)
+            if (frame[r][c] === -1)
                 // hidden
                 hiddenCells.push([r, c]);
-            else if (frame[r][c] == -2)
+            else if (frame[r][c] === -2)
                 // flag
                 numFlags++;
         }
     }
-    if (numFlags == numCloseMines) return hiddenCells;
+    if (numFlags === numCloseMines) return hiddenCells;
     else return [];
 }
 
@@ -260,7 +259,7 @@ export function simpleAlgorithm(frame) {
     if (
         frame.every(function (row) {
             return row.every(function (value) {
-                return value == -1; // whether hidden cell
+                return value === -1; // whether hidden cell
             });
         })
     ) {

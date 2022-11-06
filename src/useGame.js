@@ -48,16 +48,15 @@ export default function useGame() {
      */
     function reveal(r, c) {
         // if there is no active game, do nothing
-        if (gameWon || gameLost)
-            return;
+        if (gameWon || gameLost) return;
 
         let board = globalBoard;
-        if (board.length == 0) {
+        if (board.length === 0) {
             // generate a global board
             board = createBoard(r, c, size, numMines);
             setGlobalBoard(board);
         }
-        
+
         const result = revealCell(globalFrame, board, r, c);
         const frame = JSON.parse(JSON.stringify(result.frame)); // deep copy so that it is not a mere mutation of globalFrame
         setGameLost(result.gameLost);
@@ -77,10 +76,9 @@ export default function useGame() {
      */
     function flag(r, c) {
         // if there is no active game, do nothing
-        if (gameWon || gameLost)
-            return;
+        if (gameWon || gameLost) return;
 
-        if (globalFrame[r][c] == -1) {
+        if (globalFrame[r][c] === -1) {
             // if hidden cell, flag
             const newNumFlags = numFlags - 1;
             setNumFlags(newNumFlags);
@@ -89,7 +87,7 @@ export default function useGame() {
                 frame: flagCell(globalFrame, r, c),
                 numFlags: newNumFlags,
             };
-        } else if (globalFrame[r][c] == -2) {
+        } else if (globalFrame[r][c] === -2) {
             // if flagged cell, unflag
             const newNumFlags = numFlags + 1;
             setNumFlags(newNumFlags);
@@ -142,5 +140,14 @@ export default function useGame() {
         }
     }
 
-    return [globalFrame, gameWon, gameLost, numFlags, resetGame, reveal, flag, applySimpleAlgo];
+    return [
+        globalFrame,
+        gameWon,
+        gameLost,
+        numFlags,
+        resetGame,
+        reveal,
+        flag,
+        applySimpleAlgo,
+    ];
 }
