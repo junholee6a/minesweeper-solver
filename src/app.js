@@ -3,30 +3,29 @@ import useGame from "./useGame.js";
 export default function App() {
     const [frame, gameWon, gameLost, numFlags, resetGame, reveal, flag, applySimpleAlgo] = useGame();
 
-    const gameStatus = ""
+    let gameStatus = ""
     if (gameWon)
         gameStatus = "You win!";
-    else is (gameLost)
+    else if (gameLost)
         gameStatus = "You lost!";
 
     return (
         <>
-            <GameDisplay id="frameContainer" frame={frame} reveal={reveal} flag={flag} />
+            <GameDisplay frame={frame} reveal={reveal} flag={flag} />
             <div id="controlPanel">
-                <span id="flagCount">Flags left: </span>
+                <span id="flagCount">Flags left: {numFlags}</span>
                 <input
                     id="applyAlgoButton"
                     type="button"
                     value="Apply Algorithm"
-                    onClick="applySimpleAlgo()"
                 />
                 <input
                     id="resetButton"
                     type="button"
                     value="Reset"
-                    onClick="resetGame()"
+                    onClick={resetGame}
                 />
-                <p>{gameStatus}</p>
+                <p id="gameStatusMessage">{gameStatus}</p>
             </div>
             <script src="script.js"></script>
         </>
@@ -42,9 +41,6 @@ function GameDisplay(props) {
     const cells = [];
     for (let r = 0; r < size; r++) {
         for (let c = 0; c < size; c++) {
-            let i = r * size + c;
-            let cell = cells[i];
-
             function handleLeftClick(e) {
                 reveal(r, c);
             }
@@ -54,22 +50,23 @@ function GameDisplay(props) {
                 e.preventDefault()
             }
 
+            const key = r + "-" + c;
+
             if (frame[r][c] == -2) {
                 // flag
-                cells.push(<div backgroundColor="Red" onClick={handleLeftClick} onContextMenu={handleRightClick}></div>);
+                cells.push(<div style={{ backgroundColor: "red" }} onClick={handleLeftClick} onContextMenu={handleRightClick} key={key}></div>);
             } else if (frame[r][c] == -1) {
                 // hidden
-                cells.push(<div backgroundColor="Green" onClick={handleLeftClick} onContextMenu={handleRightClick}></div>);
+                cells.push(<div style={{ backgroundColor: "green" }} onClick={handleLeftClick} onContextMenu={handleRightClick} key={key}></div>);
             } else {
                 // number 0-8
-                const text = "";
+                let text = "";
                 if (frame[r][c] > 0)
                     text = String(frame[r][c]);
-                cells.push(<div backgroundColor="LightGrey" onClick={handleLeftClick} onContextMenu={handleRightClick}>{text}</div>);
+                cells.push(<div style={{ backgroundColor: "lightGrey" }} onClick={handleLeftClick} onContextMenu={handleRightClick} key={key}>{text}</div>);
                 
             }
         }
     }
-    return (<>{cells}</>);
-
+    return (<div id="frameContainer">{cells}</div>);
 }

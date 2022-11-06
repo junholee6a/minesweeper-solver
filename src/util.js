@@ -2,7 +2,7 @@
 // cell at (clickR, clickC) is a 0 number cell
 export function createBoard(clickR, clickC, size, numMines) {
     // initialize board
-    board = [];
+    const board = [];
 
     // fill board with zeros
     for (let r = 0; r < size; r++) {
@@ -58,7 +58,7 @@ export function createBoard(clickR, clickC, size, numMines) {
 // Returns a new frame, all hidden
 export function createFrame(size) {
     // initialize frame
-    frame = [];
+    const frame = [];
 
     // fill board with 'h' (hidden)
     for (let r = 0; r < size; r++) {
@@ -156,14 +156,12 @@ export function revealCell(frame, board, r, c) {
 export function flagCell(frame, r, c) {
     const size = frame.length;
     frame[r][c] = -2;
-    numFlags++;
     return frame;
 }
 
 //Returns an updated frame such that a cell is unflagged
 export function unflagCell(frame, r, c) {
     frame[r][c] = -1;
-    numFlags--;
     return frame;
 }
 
@@ -267,7 +265,7 @@ export function simpleAlgorithm(frame) {
         })
     ) {
         // Reveal middle cell and return
-        mid = Math.trunc(size / 2);
+        const mid = Math.trunc(size / 2);
         return {
             moveType: "r",
             r: mid,

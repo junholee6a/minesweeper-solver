@@ -32,3 +32,9 @@
     display: block;
     text-align: center;
 }
+
+#gameStatusMessage {
+    margin: 0 auto;
+    display: block;
+    text-align: center;
+}

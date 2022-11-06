@@ -9,7 +9,7 @@ import {
     flagCell,
     unflagCell,
     simpleAlgorithm,
-} from "./utils.js";
+} from "./util.js";
 
 export default function useGame() {
     const size = 9;
@@ -51,17 +51,18 @@ export default function useGame() {
         if (gameWon || gameLost)
             return;
 
-        let board = [];
-        if (globalBoard.length == 0) {
+        let board = globalBoard;
+        if (board.length == 0) {
             // generate a global board
             board = createBoard(r, c, size, numMines);
-        } else {
-            board = globalBoard;
+            setGlobalBoard(board);
         }
+        
         const result = revealCell(globalFrame, board, r, c);
-        const frame = result.frame;
+        const frame = JSON.parse(JSON.stringify(result.frame)); // deep copy so that it is not a mere mutation of globalFrame
         setGameLost(result.gameLost);
-        setGameWon(isGameWon(globalBoard, frame));
+        setGameWon(isGameWon(board, frame));
+        setGlobalFrame(frame);
         return {
             gameLost: result.gameLost,
             frame: frame,
@@ -83,6 +84,7 @@ export default function useGame() {
             // if hidden cell, flag
             const newNumFlags = numFlags - 1;
             setNumFlags(newNumFlags);
+            setGlobalFrame(flagCell(globalFrame, r, c));
             return {
                 frame: flagCell(globalFrame, r, c),
                 numFlags: newNumFlags,
@@ -91,6 +93,7 @@ export default function useGame() {
             // if flagged cell, unflag
             const newNumFlags = numFlags + 1;
             setNumFlags(newNumFlags);
+            setGlobalFrame(unflagCell(globalFrame, r, c));
             return {
                 frame: unflagCell(globalFrame, r, c),
                 numFlags: newNumFlags,
@@ -112,7 +115,7 @@ export default function useGame() {
      *     numFlags: Number of flags remaining
      */
     function applySimpleAlgo() {
-        const { moveType, r, c } = simpleAlgorithm(frame);
+        const { moveType, r, c } = simpleAlgorithm(globalFrame);
         if (moveType === "r") {
             // reveal a cell
             const { gameLost, frame } = reveal(r, c);
