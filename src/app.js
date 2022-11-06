@@ -25,6 +25,7 @@ export default function App() {
                     id="applyAlgoButton"
                     type="button"
                     value="Apply Algorithm"
+                    onClick={applySimpleAlgo}
                 />
                 <input
                     id="resetButton"
