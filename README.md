@@ -1,70 +1,23 @@
-# Getting Started with Create React App
+# Minesweeper Solver
+This is a browser Minesweeper game with a button that will automatically select a next move if an obvious one exists.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+The following is about my development process.
 
-## Available Scripts
+## Minesweeper Game
+I had previously followed a tutorial for a simple snake game, so I decided to make Minesweeper next since they are both grid-based.
 
-In the project directory, you can run:
+Challenges:
+- Nuances in CSS, such as making an element responsive but setting size limits so that it doesn't get too big or small
+- Keeping my JavaScript organized, as it was all in one file. I fix this later
 
-### `npm start`
+## Solver
+The solving algorithm is straightforward because it only looks for obvious moves, but it was more work to code and debug it than I expected.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Debugging was challenging, so I wrote tests for them and learned about test driven development. The tests made it much easier to debug logical errors that didn't crash the program but caused incorrect results.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## React
+I thought my script structure could be improved, so I read tutorials on JavaScript and React, then rewrote the app using create-react-app.
 
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Challenges:
+- Planning a file structure and separating UI from "business logic". I ended up making a main component to handle UI, a custom hook to handle the game logic, and a util file containing functions with no global states or side effects (which are easier to debug).
+- I tried to make a class to represent possible "moves" that can be made in Minesweeper. For example, the solver function would return a Move object containing the position and whether to flag or reveal a space. But there were so many exceptions to this, such as making no move or losing the game, that I decided it would be better to have functions return multiple values and write comments explaining the return values.
